@@ -1,0 +1,30 @@
+name: Daily Report
+
+on:
+  schedule:
+    - cron: '0 8 * * *'  # 每天8点
+  workflow_dispatch:
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install deps
+        run: pip install -r requirements.txt
+      - name: Run daily report
+        run: PYTHONPATH=. python scripts/daily_report.py
+      - name: Commit report
+        run: |
+          git config --local user.email "javis@ai.local"
+          git config --local user.name "Javis AI"
+          git add reports/
+          git commit -m "📊 Daily report $(date +%Y-%m-%d)" || exit 0
+      - name: Push
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
