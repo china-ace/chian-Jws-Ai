@@ -19,3 +19,18 @@ telegram-send>=0.41.0
 
 # 定时任务
 schedule>=1.2.0
+
+# vLLM (本地LLM推理)
+vllm>=0.2.0
+
+# LLM API
+openai>=1.0.0
+anthropic>=0.18.0
+
+# 向量数据库 (RAG)
+faiss-cpu>=1.7.0
+sentence-transformers>=2.2.0
+
+# LangChain集成
+langchain>=0.1.0
+langchain-community>=0.0.10

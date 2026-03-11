@@ -1,0 +1,45 @@
+# vLLM Docker 部署
+version: '3.8'
+
+services:
+  vllm:
+    image: vllm/vllm:latest
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    ports:
+      - "8000:8000"
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+    volumes:
+      - ./models:/models
+    command: >
+      --model meta-llama/Llama-2-7b-chat-hf
+      --tensor-parallel-size 1
+      --gpu-memory-utilization 0.9
+      --max-model-len 4096
+      --host 0.0.0.0
+      --port 8000
+
+  # API网关
+  api-gateway:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - vllm
+    environment:
+      - VLLM_BASE_URL=http://vllm:8000
+    command: python api/vllm_proxy.py
+
+  # Web界面
+  web-ui:
+    image: ghcr.io/huggingface/chat-ui
+    ports:
+      - "3000:3000"
+    environment:
+      - API_BASE_URL=http://api-gateway:8080
