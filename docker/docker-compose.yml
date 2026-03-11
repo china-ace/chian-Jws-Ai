@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  trading-bot:
+    build: .
+    ports:
+      - "8000:8000"
+      - "5000:5000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./data:/app/data
+      - ./reports:/app/reports
+      - ./portfolio.json:/app/portfolio.json
+    restart: unless-stopped
+
+  # 可选: 添加数据库
+  # db:
+  #   image: postgres:15
+  #   environment:
+  #     POSTGRES_PASSWORD: trading123
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+
+# volumes:
+#   postgres_data:
